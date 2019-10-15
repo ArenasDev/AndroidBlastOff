@@ -26,35 +26,36 @@ args = ""
 tools = {}
 user_agent_list = [
    #Chrome
-    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36',
-    'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.90 Safari/537.36',
-    'Mozilla/5.0 (Windows NT 5.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.90 Safari/537.36',
-    'Mozilla/5.0 (Windows NT 6.2; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.90 Safari/537.36',
-    'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.157 Safari/537.36',
-    'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36',
-    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.36',
-    'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.36',
-    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36',
-    'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36',
-    #Firefox
-    'Mozilla/4.0 (compatible; MSIE 9.0; Windows NT 6.1)',
-    'Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; rv:11.0) like Gecko',
-    'Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; WOW64; Trident/5.0)',
-    'Mozilla/5.0 (Windows NT 6.1; Trident/7.0; rv:11.0) like Gecko',
-    'Mozilla/5.0 (Windows NT 6.2; WOW64; Trident/7.0; rv:11.0) like Gecko',
-    'Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko',
-    'Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.0; Trident/5.0)',
-    'Mozilla/5.0 (Windows NT 6.3; WOW64; Trident/7.0; rv:11.0) like Gecko',
-    'Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; Trident/5.0)',
-    'Mozilla/5.0 (Windows NT 6.1; Win64; x64; Trident/7.0; rv:11.0) like Gecko',
-    'Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.1; WOW64; Trident/6.0)',
-    'Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.1; Trident/6.0)',
-    'Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 5.1; Trident/4.0; .NET CLR 2.0.50727; .NET CLR 3.0.4506.2152; .NET CLR 3.5.30729)'
+	'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36',
+	'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.90 Safari/537.36',
+	'Mozilla/5.0 (Windows NT 5.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.90 Safari/537.36',
+	'Mozilla/5.0 (Windows NT 6.2; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.90 Safari/537.36',
+	'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.157 Safari/537.36',
+	'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36',
+	'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.36',
+	'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.36',
+	'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36',
+	'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36',
+	#Firefox
+	'Mozilla/4.0 (compatible; MSIE 9.0; Windows NT 6.1)',
+	'Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; rv:11.0) like Gecko',
+	'Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; WOW64; Trident/5.0)',
+	'Mozilla/5.0 (Windows NT 6.1; Trident/7.0; rv:11.0) like Gecko',
+	'Mozilla/5.0 (Windows NT 6.2; WOW64; Trident/7.0; rv:11.0) like Gecko',
+	'Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko',
+	'Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.0; Trident/5.0)',
+	'Mozilla/5.0 (Windows NT 6.3; WOW64; Trident/7.0; rv:11.0) like Gecko',
+	'Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; Trident/5.0)',
+	'Mozilla/5.0 (Windows NT 6.1; Win64; x64; Trident/7.0; rv:11.0) like Gecko',
+	'Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.1; WOW64; Trident/6.0)',
+	'Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.1; Trident/6.0)',
+	'Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 5.1; Trident/4.0; .NET CLR 2.0.50727; .NET CLR 3.0.4506.2152; .NET CLR 3.5.30729)'
 ]
 
 def checkTools():
 	mandatoryTools = ["apktool", "adb"]
-	optionalTools = [(["jd-gui", "--help"], "jadx"), ("d2j-dex2jar", "enjarify")]
+	#optionalTools = [(["jd-gui", "--help"], "jadx"), ("d2j-dex2jar", "enjarify")]
+	optionalTools = [("d2j-dex2jar", "enjarify")]
 
 	#Check if mandatory tools are installed
 	for tool in mandatoryTools:
@@ -67,7 +68,7 @@ def checkTools():
 			if checkTool(tool):
 				check = True
 		if not check:
-			print "[-] Tools " + tup + " are not found in the system. At least on of them is necessary"
+			print "[-] Tools " + str(tup) + " are not found in the system. At least on of them is necessary"
 			sys.exit()
 	
 def checkTool(tool):
@@ -175,7 +176,7 @@ def prettyPrintPackages(packages):
 
 def getAPKName():
 	global args
-	return args.apk.replace("\\", "/").split("/")[-1].split(".")[0]
+	return args.apk.replace("\\", "/").split("/")[-1][0:-4]
 
 
 def executeCommand(command):
@@ -201,8 +202,8 @@ def processAPK():
 
 def playStore():
 	global args
-	tok1, tok2 = obtainTokens()
-	req = requests.post("https://api-apk-dl.evozi.com/download", {'bfbacfafeecdde':tok2, 'fdcfdaeeddcdebff':'com.inkwired.droidinfo', 'cedaecaebaaead':tok1, 'fetch': 'false'}, verify=True)
+
+	req = requests.post("https://api-apk-dl.evozi.com/download", obtainTokens(), verify=True)
 	print "[+] Downloading APK"
 	url = "https://" + req.text[req.text.find("storage.evozi.com"):req.text.find("\",\"obb_url\"")].replace("\\", "")
 	req = requests.get(url, allow_redirects=True)
@@ -211,16 +212,27 @@ def playStore():
 
 #Obtain a mandatory tokens to download from evozi
 def obtainTokens():
-	req = requests.get("https://apps.evozi.com/apk-downloader/?id=com.inkwired.droidinfo", headers={'User-Agent': random.choice(user_agent_list)})
+	req = requests.get("https://apps.evozi.com/apk-downloader/?id=" + args.playstore, headers={'User-Agent': random.choice(user_agent_list)})
+	#NTjkzVfJCDIbwLwRt =  { aafcfaaffeadbeadf   : 1571161819,  adbfeeccdfe: ebeGrxcqBYsDWwSvxGL,      aedfebf:       olYbP,   fetch: $('#forceRefetch').is(':checked')};
 	response = req.text.replace(" ", "").replace("\r", "").replace("\n", "")
-	v1 = response.find("<ahref=\"assets/img/guide/googleplay_packagename.png\"")
-	v2 = response.find("cedaecaebaaead") + 100
-	index = response[v1:v2].replace('\';var', 'XXX', 1).find('var')
-	tok1 = response[v1 + index:v2].split("'")[2]
-	v1 = response.find("={bfbacfafeecdde:") + 17
-	tok2 = response[v1:].split(",")[0]
-	return tok1, tok2
+	v1 = response.find("type:\"POST\",//crossDomain:true,dataType:\"json\",data:")
+	#varName is NTjkzVfJCDIbwLwRt
+	varName = response[v1:].split(":")[4].split(",")[0]
+	if v1 == -1:
+		v1 = response.find("type:\"POST\",dataType:\"json\",data:")
+		varName = response[v1:].split(":")[3].split(",")[0]
+	
+	requestJSONData = response[response.find(varName + "={") + len(varName) + 2:]
 
+	auxToken = response[response.find("var" + str(requestJSONData.split(",")[2].split(":")[1])):].split(";")[0].split("=")[1][1:-1]
+	#str(requestJSONData.split(":")[0]) + ":" + str(requestJSONData.split(":")[1])  ->  aafcfaaffeadbeadf   : 1571161819,  adbfeeccdfe
+	#args.playstore  ->  name of package (ebeGrxcqBYsDWwSvxGL)
+	#response.split(":")[2].split(",")[1]  + auxToken  ->  aedfebf:       olYbP
+	
+	return {str(requestJSONData.split(":")[0]) : str(requestJSONData.split(":")[1].split(",")[0]),
+			str(requestJSONData.split(":")[1].split(",")[1]) : args.playstore,
+			str(requestJSONData.split(":")[2].split(",")[1]) : auxToken,
+			"fetch" : "false"}
 
 def info():
 	global args
@@ -270,11 +282,11 @@ def version():
 	f.close()
 
 def getTerminalSize():
-    import fcntl, termios, struct
-    th, tw, hp, wp = struct.unpack('HHHH',
-        fcntl.ioctl(0, termios.TIOCGWINSZ,
-        struct.pack('HHHH', 0, 0, 0, 0)))
-    return tw, th
+	import fcntl, termios, struct
+	th, tw, hp, wp = struct.unpack('HHHH',
+		fcntl.ioctl(0, termios.TIOCGWINSZ,
+		struct.pack('HHHH', 0, 0, 0, 0)))
+	return tw, th
 
 if __name__== "__main__":
 	checkTools()
