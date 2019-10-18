@@ -202,13 +202,23 @@ def processAPK():
 
 def playStore():
 	global args
-
+	
+	print "[*] This feature is experimental (depends on apps.evozi.com)"
+	print "[+] Downloading APK (This could take a while...)"
 	req = requests.post("https://api-apk-dl.evozi.com/download", obtainTokens(), verify=True)
-	print "[+] Downloading APK"
-	url = "https://" + req.text[req.text.find("storage.evozi.com"):req.text.find("\",\"obb_url\"")].replace("\\", "")
-	req = requests.get(url, allow_redirects=True)
-	open(args.outputdir + args.playstore + ".apk", "wb").write(req.content)
-	args.apk = args.outputdir + args.playstore + ".apk"
+	
+	if "404" in req.text:
+		print "[-] APK not found. Check if it is downloadable from https://apps.evozi.com/apk-downloader/"
+	        sys.exit()
+	else:
+		try:
+			url = "https://" + req.text[req.text.find("storage.evozi.com"):req.text.find("\",\"obb_url\"")].replace("\\", "")
+			req = requests.get(url, allow_redirects=True, timeout=300)
+			open(args.outputdir + args.playstore + ".apk", "wb").write(req.content)
+			args.apk = args.outputdir + args.playstore + ".apk"
+		except:
+			print "[-] Download failed. Check if it is downloadable from https://apps.evozi.com/apk-downloader/"
+			sys.exit()
 
 #Obtain a mandatory tokens to download from evozi
 def obtainTokens():
@@ -225,9 +235,6 @@ def obtainTokens():
 	requestJSONData = response[response.find(varName + "={") + len(varName) + 2:]
 
 	auxToken = response[response.find("var" + str(requestJSONData.split(",")[2].split(":")[1])):].split(";")[0].split("=")[1][1:-1]
-	#str(requestJSONData.split(":")[0]) + ":" + str(requestJSONData.split(":")[1])  ->  aafcfaaffeadbeadf   : 1571161819,  adbfeeccdfe
-	#args.playstore  ->  name of package (ebeGrxcqBYsDWwSvxGL)
-	#response.split(":")[2].split(",")[1]  + auxToken  ->  aedfebf:       olYbP
 	
 	return {str(requestJSONData.split(":")[0]) : str(requestJSONData.split(":")[1].split(",")[0]),
 			str(requestJSONData.split(":")[1].split(",")[1]) : args.playstore,
