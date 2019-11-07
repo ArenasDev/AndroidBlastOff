@@ -1,0 +1,7 @@
+prettytable
+futures
+requests
+colorama
+selenium
+termcolor
+lmxl
