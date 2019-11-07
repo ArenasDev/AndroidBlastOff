@@ -9,7 +9,7 @@ Features:
 - Build apk from decompiled
 - Sign apk
 - Install apk (through adb)
-
+- Or build, sign and install automatically
 
 TODO:
-- Improve the download from evozi.com
+- Implement more ways of downloading the APK (find other providers)

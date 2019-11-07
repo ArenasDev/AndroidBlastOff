@@ -18,7 +18,10 @@ import multiprocessing
 import requests
 import random
 import glob
-import curses
+import time
+import colorama
+import warnings
+from selenium import webdriver
 from termcolor import colored
 from lxml import etree
 from getpass import getpass
@@ -53,6 +56,9 @@ user_agent_list = [
 	'Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.1; Trident/6.0)',
 	'Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 5.1; Trident/4.0; .NET CLR 2.0.50727; .NET CLR 3.0.4506.2152; .NET CLR 3.5.30729)'
 ]
+
+colorama.init()
+time1 = ""
 
 def parseArgs():
 	global args
@@ -126,13 +132,13 @@ def parseArgs():
 			elif args.sign != None and args.sign != "same":
 				args.install = args.sign
 
-def unpackAndDecompile(apk):
+def unpackAndDecompile():
 	global args
 	if args.apk != "":
 		print colored("[+] Unpacking APK using Apktool", 'green', attrs=['bold'])
 		print colored("[+] Decompiling APK using enjarify", 'green', attrs=['bold'])
 		with concurrent.futures.ThreadPoolExecutor(max_workers=multiprocessing.cpu_count()) as executor:
-			executor.map(executeCommand, [["apktool", "d", apk, "-f"], ["enjarify", apk, "-f"]])
+			executor.map(executeCommand, [["apktool", "d", args.apk, "-f"], ["enjarify", args.apk, "-f"]])
 
 #Connect using adb, show packages and download selected apk
 def adb():
@@ -173,6 +179,7 @@ def adb():
 		print colored("[+] APK extracted to " + args.apk, 'green', attrs=['bold'])
 	else:
 		print colored("[-] ADB: Specified device is not found or there is no device.", 'red', attrs=['bold'])
+		sys.exit()
 
 def prettyPrintPackages(packages):
 	pt = PrettyTable()
@@ -219,8 +226,8 @@ def executeCommand(command):
 			p = Popen(cmd, stdin=PIPE, stdout=PIPE, stderr=PIPE)
 			output, err = p.communicate()
 		except OSError as e:
-			print colored("[-] Tool " + cmd + " is not found in the system.", 'red', attrs=['bold'])
-			os._exit(os.EX_CONFIG)
+			print colored("[-] Tool " + cmd + " is not found in the system.\n", 'red', attrs=['bold'])
+			os._exit(1)
 		p = Popen(command, stdin=PIPE, stdout=PIPE, stderr=PIPE)
 		output, err = p.communicate()
 		return True, output
@@ -238,13 +245,10 @@ def processAPK():
 			playStore()
 		elif args.adb:
 			adb()
-		unpackAndDecompile(args.apk)
+		unpackAndDecompile()
 
-def playStore():
-	global args
-	
-	print colored("[*] This feature is experimental (depends on apps.evozi.com)", 'yellow', attrs=['bold'])
-	print colored("[+] Downloading APK (This could take a while...)", 'green', attrs=['bold'])
+def playStore2():
+	print colored("[+] Trying alternate method", 'yellow', attrs=['bold'])
 	req = requests.post("https://api-apk-dl.evozi.com/download", obtainTokens(), verify=True)
 	
 	if "404" in req.text:
@@ -255,10 +259,64 @@ def playStore():
 			url = "https://" + req.text[req.text.find("storage.evozi.com"):req.text.find("\",\"obb_url\"")].replace("\\", "")
 			req = requests.get(url, allow_redirects=True, timeout=300)
 			open(args.playstore + ".apk", "wb").write(req.content)
+			print colored("[+] APK downloaded", 'green', attrs=['bold'])
 			args.apk = args.playstore + ".apk"
 		except:
 			print colored("[-] Download failed. Check if it is downloadable from https://apps.evozi.com/apk-downloader/", 'red', attrs=['bold'])
 			sys.exit()
+
+def playStore():
+	print colored("[*] This feature is experimental (depends on apps.evozi.com)", 'yellow', attrs=['bold'])
+	print colored("[*] Downloading APK", 'green', attrs=['bold'])
+	warnings.filterwarnings('ignore')
+	time1 = time.time()
+
+	driver = webdriver.PhantomJS(service_log_path=os.path.devnull)
+	driver.set_window_size(1120, 550)
+	driver.get("https://apps.evozi.com/apk-downloader/?id=")
+	domain = 'storage.evozi.com'
+	check = False
+	try:
+		for elem in driver.find_elements_by_tag_name("input"):
+			aux = elem.get_attribute('placeholder')
+			if "play.google.com" in aux or "com.evozi.network" in aux:
+				check = True
+				elem.send_keys(args.playstore)
+		if not check:
+			raise Exception("Input field not found in web page")
+		check = False
+
+		for elem in driver.find_elements_by_tag_name("button"):
+			aux = elem.text
+			if "Generate Down" in aux or "oad Link" in aux:
+				check = True
+				elem.click()
+
+		if not check:
+			raise Exception("Button not found in website")
+
+		print colored("[+] Waiting for the download link (This could take a while...)", 'green', attrs=['bold'])
+		check = False
+		while not check:
+			for elem in driver.find_elements_by_tag_name("a"):
+				aux = elem.get_attribute('href')
+				if aux != None and domain in aux:
+					check = True
+					print colored("[+] Download link received. Downloading APK", 'green', attrs=['bold'])
+					req = requests.get(aux, allow_redirects=True, timeout=180)
+					open(args.playstore + ".apk", "wb").write(req.content)
+					print colored("[+] APK downloaded", 'green', attrs=['bold'])
+					args.apk = args.playstore + ".apk"
+					break
+			time.sleep(2)
+			if (time.time() - time1) > 180:
+				raise Exception("Timeout")
+	except Exception as e:
+		print colored("[-] Download failed", 'red', attrs=['bold'])
+		print colored(e, 'red', attrs=['bold'])
+		playStore2(args.playstore)
+
+	driver.quit()
 
 #Obtain a mandatory tokens to download from evozi
 def obtainTokens():
@@ -289,7 +347,7 @@ def info():
 		f.write("APK name: " + args.apk.split("/")[-1] + "\n")
 		f.write("Date: " + str(datetime.now()) + "\n")
 		f.close()
-		print colored("[+] Calulating hashes", 'green', attrs=['bold'])
+		print colored("[+] Calculating hashes", 'green', attrs=['bold'])
 		calculateHash()
 		print colored("[+] Retrieving version", 'green', attrs=['bold'])
 		version()
@@ -300,7 +358,7 @@ def calculateHash():
 	sha1 = hashlib.sha1()
 	sha256 = hashlib.sha256()
 	sha512 = hashlib.sha512()
-	with open(args.apk,"rb") as f:
+	with open(args.apk, "rb") as f:
 		# Read and update hash string value in blocks of 4K
 		for byte_block in iter(lambda: f.read(4096),b""):
 			md5.update(byte_block)
@@ -431,6 +489,7 @@ def installAPK():
 		print colored("[+] Installing APK", 'green', attrs=['bold'])
 	else:
 		print colored("[-] ADB: Specified device is not found or there is no device.", 'red', attrs=['bold'])
+		sys.exit()
 
 def buildSignInstall():
 	if args.build:
