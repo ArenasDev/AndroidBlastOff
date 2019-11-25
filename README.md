@@ -15,6 +15,7 @@ TODO:
 - Implement more ways of downloading the APK (find other providers)
 
 Parameters:
+
 	-h, --help            show this help message and exit
 	--apk APK             Path of the apk (default: current path)
 	--playstore PLAYSTORE
