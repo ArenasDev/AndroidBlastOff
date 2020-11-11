@@ -1,9 +1,10 @@
 # AndroidBlastOff
 A tool to speed up Android pentesting by automating the APK acquisition and initial information gathering.
 
+Moved to only Python 3
+
 Features:
 - Extract from an adb connected device (listing all available packages)
-- Download the latest version of the APK from Play Store (thanks to evozi.com, pls do not brute force them)
 - Work with a local copy of an APK
 - Extract initial information (Timestamp, MD5, SHA1, SHA256, SHA512, internal version, public version, and min and target SDK)
 - Build apk from decompiled
@@ -11,15 +12,10 @@ Features:
 - Install apk (through adb)
 - Or build, sign and install automatically
 
-TODO:
-- Implement more ways of downloading the APK (find other providers)
-
 Parameters:
 
 	-h, --help            show this help message and exit
 	--apk APK             Path of the apk (default: current path)
-	--playstore PLAYSTORE
-	                    [EXPERIMENTAL] PACKAGE name of the app from Play Store (https://play.google.com/store/apps/details?id={PACKAGE_NAME}&hl=es)
 	--adb                 Select the apk using adb
 	--device DEVICE       Device to connect to using adb
 	--skipinfo            Skip info tasks (hash, version, etc)
@@ -41,8 +37,6 @@ Example of use
 
 	Perform operations with a local copy of APK:
 	        abo --apk {PATH_TO_LOCAL_APK}
-	Download APK from playStore (EXPERIMENTAL):
-	        abo --playstore {APK_PACKAGE_NAME_FROM_PLAYSTORE}
 	Get APK using ADB (requires a connection via ADB):
 	        abo --adb
 	Get APK using ADB using specific device (requires a connection via ADB):

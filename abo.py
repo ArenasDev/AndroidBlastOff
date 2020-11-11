@@ -1,6 +1,6 @@
 '''
 1/Change the order of the packages using adb, up to down and left to right instead of left to right and up to down
-2/print progress of tasks, where possible
+2/print(progress of tasks, where possible)
 3/seems like installation has some issues when the original is already installed
 '''
 
@@ -28,7 +28,6 @@ import time
 import colorama
 import warnings
 from argparse import RawTextHelpFormatter
-from selenium import webdriver
 from termcolor import colored
 from lxml import etree
 from getpass import getpass
@@ -73,8 +72,6 @@ def parseArgs():
 		epilog=colored("Example of use\n\n", 'yellow', attrs=['bold']) + \
 		colored("Perform operations with a local copy of APK:\n", 'yellow', attrs=['bold']) + \
 		colored("\tabo --apk {PATH_TO_LOCAL_APK}\n", 'red', attrs=['bold']) + \
-		colored("Download APK from playStore (EXPERIMENTAL):\n", 'yellow', attrs=['bold']) + \
-		colored("\tabo --playstore {APK_PACKAGE_NAME_FROM_PLAYSTORE}\n", 'red', attrs=['bold']) + \
 		colored("Get APK using ADB (requires a connection via ADB):\n", 'yellow', attrs=['bold']) + \
 		colored("\tabo --adb\n", 'red', attrs=['bold']) + \
 		colored("Get APK using ADB using specific device (requires a connection via ADB):\n", 'yellow', attrs=['bold']) + \
@@ -104,14 +101,13 @@ def parseArgs():
 		colored("\t--keystorename {NAME}", 'red', attrs=['bold']))
 
 	parser.add_argument('--apk', default="", help='Path of the apk (default: current path)', required=False)
-	parser.add_argument('--playstore', default="", help='[EXPERIMENTAL] PACKAGE name of the app from Play Store (https://play.google.com/store/apps/details?id={PACKAGE_NAME}&hl=es)', required=False)
 	parser.add_argument('--adb', default=False, help='Select the apk using adb', required=False, action='store_true')
 	parser.add_argument('--device', default="", help='Device to connect to using adb', required=False)
 	parser.add_argument('--skipinfo', default=False, help='Skip info tasks (hash, version, etc)', required=False, action='store_true')
 	parser.add_argument('--build', default=None, help='Folder of the unpacked APK to build (won\'t decompile or unpack) (can be set to "same" if --sign or --install are set)', required=False)
 	parser.add_argument('--sign', default=None, help='Folder of the unpacked APK to sign (won\'t decompile or unpack) (can be set to "same" if --build or --install are set)', required=False)
 	parser.add_argument('--install', default=None, help='Folder of the unpacked APK to install (WILL UNINSTALL APK FROM DEVICE and won\'t decompile or unpack) (can be set to "same" if --sign or --build are set)', required=False)
-	parser.add_argument('--bsi', default=None, help='Build, sign and install the apk (WILL UNINSTALL APK FROM DEVICE requires --apk, --playstore or --adb and a device connected through adb)', required=False)
+	parser.add_argument('--bsi', default=None, help='Build, sign and install the apk (WILL UNINSTALL APK FROM DEVICE requires --apk or --adb and a device connected through adb)', required=False)
 	parser.add_argument('--keystore', default="", help='Keystore to use for signing', required=False)
 	parser.add_argument('--keystorepassword', default="", help='Password for the keystore to use for signing', required=False)
 	parser.add_argument('--keystorealias', default="", help='Alias for the new keystore to use for signing', required=False)
@@ -121,29 +117,29 @@ def parseArgs():
 	args = parser.parse_args()
 
 	if not len(sys.argv) > 1:
-		print colored("[-] No option has been selected", 'red', attrs=['bold'])
+		print(colored("[-] No option has been selected", 'red', attrs=['bold']))
 		parser.print_help()
 		sys.exit()
 
-	if (args.apk != "" and (args.playstore != "" or args.adb)) or (args.playstore != "" and (args.apk != "" or args.adb)) or (args.adb and (args.playstore != "" or args.apk != "")):
-		print colored("[-] --apk, --playstore and --adb are mutually exclusive. Only one can be used", 'red', attrs=['bold'])
+	if (args.apk != "" and args.adb):
+		print(colored("[-] --apk and --adb are mutually exclusive. Only one can be used", 'red', attrs=['bold']))
 	
-	'''if args.apk == "" and args.playstore == "" and not args.adb and args.sign == None and args.build == None and args.install == None and args.bsi == False:
-		print colored("[-] No option has been selected", 'red', attrs=['bold'])
+	'''if args.apk == "" and not args.adb and args.sign == None and args.build == None and args.install == None and args.bsi == False:
+		print(colored("[-] No option has been selected", 'red', attrs=['bold']))
 		parser.print_help()
 		sys.exit()
 	'''
 
 	if args.apk != "" and not os.path.exists(args.apk):
-		print colored("[-] File " + args.apk + " does not exist", 'red', attrs=['bold'])
+		print(colored("[-] File " + args.apk + " does not exist", 'red', attrs=['bold']))
 		sys.exit()
 
-	if args.bsi and args.apk == "" and args.adb == "" and args.playstore == "":
-		print colored("[-] Must specify --apk, --adb or --playstore to use --bsi", 'red', attrs=['bold'])
+	if args.bsi and args.apk == "" and args.adb == "":
+		print(colored("[-] Must specify --apk, --adb to use --bsi", 'red', attrs=['bold']))
 		sys.exit()
 
 	if args.keystore != "" and args.keystorealias == "":
-		print colored("[-] Must specify a keystore alias if a keystore is specified (use --keystorealias)", 'red', attrs=['bold'])
+		print(colored("[-] Must specify a keystore alias if a keystore is specified (use --keystorealias)", 'red', attrs=['bold']))
 		sys.exit()
 
 	if args.sign != None:
@@ -182,8 +178,8 @@ def parseArgs():
 def unpackAndDecompile():
 	global args
 	if args.apk != "":
-		print colored("[+] Unpacking APK using Apktool", 'green', attrs=['bold'])
-		print colored("[+] Decompiling APK using enjarify", 'green', attrs=['bold'])
+		print(colored("[+] Unpacking APK using Apktool", 'green', attrs=['bold']))
+		print(colored("[+] Decompiling APK using enjarify", 'green', attrs=['bold']))
 		with concurrent.futures.ThreadPoolExecutor(max_workers=multiprocessing.cpu_count()) as executor:
 			executor.map(executeCommand, [["apktool", "d", args.apk, "-f"], ["enjarify", args.apk, "-f"]])
 
@@ -203,13 +199,13 @@ def adb():
 
 		packages = [package.split(':')[1].splitlines()[0] for package in packages]
 		packages.sort()
-		print colored("[+] Available packages:", 'green', attrs=['bold'])
+		print(colored("[+] Available packages:", 'green', attrs=['bold']))
 		prettyPrintPackages(packages)
 		#get users choice
 		selectedPackage = -1
 		while True:
 			try:
-				print colored("[+] Select package to download APK file (0 - " + str(len(packages) - 1) + "):", 'green', attrs=['bold'])
+				print(colored("[+] Select package to download APK file (0 - " + str(len(packages) - 1) + "):", 'green', attrs=['bold']))
 				selectedPackage = int(input())
 				break
 			except KeyboardInterrupt as e:
@@ -218,16 +214,16 @@ def adb():
 				pass
 
 		#Get full path for the APK file
-		print colored("[+] Obtaining full path of selected APK", 'green', attrs=['bold'])
+		print(colored("[+] Obtaining full path of selected APK", 'green', attrs=['bold']))
 		_, output = executeCommand(["adb", "shell", "pm", "path", packages[selectedPackage]])
 
 		#Extract apk into destination
-		print colored("[+] Extracting APK", 'green', attrs=['bold'])
+		print(colored("[+] Extracting APK", 'green', attrs=['bold']))
 		args.apk = packages[selectedPackage] + ".apk"
 		_, output = executeCommand(["adb", "pull", output.split(":")[1].splitlines()[0], args.apk])
-		print colored("[+] APK extracted to " + args.apk, 'green', attrs=['bold'])
+		print(colored("[+] APK extracted to " + args.apk, 'green', attrs=['bold']))
 	else:
-		print colored("[-] ADB: Specified device is not found or there is no device.", 'red', attrs=['bold'])
+		print(colored("[-] ADB: Specified device is not found or there is no device.", 'red', attrs=['bold']))
 		sys.exit()
 
 def prettyPrintPackages(packages):
@@ -235,7 +231,7 @@ def prettyPrintPackages(packages):
 	pt.set_style(PLAIN_COLUMNS)
 	pt.header = False
 	terminalWidth, _ = getTerminalSize()
-	numberOfColumns = terminalWidth / (len(max(packages, key=len)) + 3)
+	numberOfColumns = terminalWidth // (len(max(packages, key=len)) + 3)
 	rest = terminalWidth % (len(max(packages, key=len)) + 3)
 	headers = []
 	for i in range(numberOfColumns):
@@ -244,7 +240,7 @@ def prettyPrintPackages(packages):
 	for i in range(numberOfColumns):
 		pt.align[str(i)] = "l"
 
-	rows = len(packages) / numberOfColumns
+	rows = len(packages) // numberOfColumns
 	if (len(packages) % numberOfColumns) != 0:
 		rows = rows + 1
 
@@ -258,7 +254,7 @@ def prettyPrintPackages(packages):
 				row.append("")
 		i += 1
 		pt.add_row(row)
-	print colored(pt, 'green', attrs=['bold'])
+	print(colored(pt, 'green', attrs=['bold']))
 
 def getAPKName():
 	global args
@@ -280,119 +276,24 @@ def executeCommand(command):
 			p = Popen(cmd, stdin=PIPE, stdout=PIPE, stderr=PIPE)
 			output, err = p.communicate()
 		except OSError as e:
-			print colored("[-] Tool " + cmd + " is not found in the system.\n", 'red', attrs=['bold'])
+			print(colored("[-] Tool " + cmd + " is not found in the system.\n", 'red', attrs=['bold']))
 			os._exit(1)
 		p = Popen(command, stdin=PIPE, stdout=PIPE, stderr=PIPE)
 		output, err = p.communicate()
-		return True, output
+		return True, output.decode('utf-8')
 	except OSError as e:
 		return False, None
 	except Exception as e:
-		print colored("[-] " + command[0], 'red', attrs=['bold'])
-		print colored(e, 'red', attrs=['bold'])
+		print(colored("[-] " + command[0], 'red', attrs=['bold']))
+		print(colored(e, 'red', attrs=['bold']))
 		return False, None
 
 def processAPK():
 	global args
 	if not args.sign and not args.build and not args.install and not args.bsi:
-		if args.playstore != "":
-			playStore()
-		elif args.adb:
+		if args.adb:
 			adb()
 		unpackAndDecompile()
-
-def playStore2():
-	print colored("[+] Trying alternate method", 'yellow', attrs=['bold'])
-	req = requests.post("https://api-apk-dl.evozi.com/download", obtainTokens(), verify=True)
-	
-	if "404" in req.text:
-		print colored("[-] APK not found. Check if it is downloadable from https://apps.evozi.com/apk-downloader/", 'red', attrs=['bold'])
-		sys.exit()
-	else:
-		try:
-			url = "https://" + req.text[req.text.find("storage.evozi.com"):req.text.find("\",\"obb_url\"")].replace("\\", "")
-			req = requests.get(url, allow_redirects=True, timeout=300)
-			open(args.playstore + ".apk", "wb").write(req.content)
-			print colored("[+] APK downloaded", 'green', attrs=['bold'])
-			args.apk = args.playstore + ".apk"
-		except:
-			print colored("[-] Download failed. Check if it is downloadable from https://apps.evozi.com/apk-downloader/", 'red', attrs=['bold'])
-			sys.exit()
-
-def playStore():
-	print colored("[*] This feature is experimental (depends on apps.evozi.com)", 'yellow', attrs=['bold'])
-	print colored("[*] Downloading APK", 'green', attrs=['bold'])
-	warnings.filterwarnings('ignore')
-	time1 = time.time()
-	
-	try:
-		driver = webdriver.PhantomJS(service_log_path=os.path.devnull)
-		driver.set_window_size(1120, 550)
-		driver.get("https://apps.evozi.com/apk-downloader/?id=")
-		domain = 'storage.evozi.com'
-		check = False
-	
-		for elem in driver.find_elements_by_tag_name("input"):
-			aux = elem.get_attribute('placeholder')
-			if "play.google.com" in aux or "com.evozi.network" in aux:
-				check = True
-				elem.send_keys(args.playstore)
-		if not check:
-			raise Exception("Input field not found in web page")
-		check = False
-
-		for elem in driver.find_elements_by_tag_name("button"):
-			aux = elem.text
-			if "Generate Down" in aux or "oad Link" in aux:
-				check = True
-				elem.click()
-
-		if not check:
-			raise Exception("Button not found in website")
-
-		print colored("[+] Waiting for the download link (This could take a while...)", 'green', attrs=['bold'])
-		check = False
-		while not check:
-			for elem in driver.find_elements_by_tag_name("a"):
-				aux = elem.get_attribute('href')
-				if aux != None and domain in aux:
-					check = True
-					print colored("[+] Download link received. Downloading APK", 'green', attrs=['bold'])
-					req = requests.get(aux, allow_redirects=True, timeout=180)
-					open(args.playstore + ".apk", "wb").write(req.content)
-					print colored("[+] APK downloaded", 'green', attrs=['bold'])
-					args.apk = args.playstore + ".apk"
-					break
-			time.sleep(2)
-			if (time.time() - time1) > 180:
-				raise Exception("Timeout")
-	except Exception as e:
-		print colored("[-] Download failed", 'red', attrs=['bold'])
-		print colored(e, 'red', attrs=['bold'])
-		playStore2(args.playstore)
-
-	driver.quit()
-
-#Obtain a mandatory tokens to download from evozi
-def obtainTokens():
-	req = requests.get("https://apps.evozi.com/apk-downloader/?id=" + args.playstore, headers={'User-Agent': random.choice(user_agent_list)})
-	#NTjkzVfJCDIbwLwRt =  { aafcfaaffeadbeadf   : 1571161819,  adbfeeccdfe: ebeGrxcqBYsDWwSvxGL,	  aedfebf:	   olYbP,   fetch: $('#forceRefetch').is(':checked')};
-	response = req.text.replace(" ", "").replace("\r", "").replace("\n", "")
-	v1 = response.find("type:\"POST\",//crossDomain:true,dataType:\"json\",data:")
-	#varName is NTjkzVfJCDIbwLwRt
-	varName = response[v1:].split(":")[4].split(",")[0]
-	if v1 == -1:
-		v1 = response.find("type:\"POST\",dataType:\"json\",data:")
-		varName = response[v1:].split(":")[3].split(",")[0]
-	
-	requestJSONData = response[response.find(varName + "={") + len(varName) + 2:]
-
-	auxToken = response[response.find("var" + str(requestJSONData.split(",")[2].split(":")[1])):].split(";")[0].split("=")[1][1:-1]
-	
-	return {str(requestJSONData.split(":")[0]) : str(requestJSONData.split(":")[1].split(",")[0]),
-			str(requestJSONData.split(":")[1].split(",")[1]) : args.playstore,
-			str(requestJSONData.split(":")[2].split(",")[1]) : auxToken,
-			"fetch" : "false"}
 
 def info():
 	global args
@@ -402,9 +303,9 @@ def info():
 		f.write("APK name: " + args.apk.split("/")[-1] + "\n")
 		f.write("Date: " + str(datetime.now()) + "\n")
 		f.close()
-		print colored("[+] Calculating hashes", 'green', attrs=['bold'])
+		print(colored("[+] Calculating hashes", 'green', attrs=['bold']))
 		calculateHash()
-		print colored("[+] Retrieving version", 'green', attrs=['bold'])
+		print(colored("[+] Retrieving version", 'green', attrs=['bold']))
 		version()
 
 def calculateHash():
@@ -450,7 +351,7 @@ def getTerminalSize():
 
 def signAPK():
 	global args
-	print colored("[+] Signing APK", 'green', attrs=['bold'])
+	print(colored("[+] Signing APK", 'green', attrs=['bold']))
 	if args.keystore != "" and len(glob.glob(args.sign + "/dist/*.apk")) == 1:
 		if os.path.exists(args.keystore):
 			if args.keystorepassword == "":
@@ -463,16 +364,16 @@ def signAPK():
 					except:
 						pass
 		else:
-			print colored("[-] Keystore file not found (" + args.keystore + ")", 'red', attrs=['bold'])
+			print(colored("[-] Keystore file not found (" + args.keystore + ")", 'red', attrs=['bold']))
 	else:
 		createKeystore()
 
 	_, output = executeCommand(["jarsigner", "-sigalg", "MD5withRSA", "-digestalg", "SHA1", "-storepass", args.keystorepassword, "-keystore", args.keystore, glob.glob(args.sign + "/dist/*.apk")[0], (args.keystorealias if args.keystorealias else "abo")])
 
 	if "jarsigner error" in output:
-		print colored("[-] APK not signed - Incorrect password", 'red', attrs=['bold'])
+		print(colored("[-] APK not signed - Incorrect password", 'red', attrs=['bold']))
 	elif "jar signed" in output:
-		print colored("[+] APK signed", 'green', attrs=['bold'])
+		print(colored("[+] APK signed", 'green', attrs=['bold']))
 
 def createKeystore():
 	global args
@@ -493,14 +394,14 @@ def createKeystore():
 	["-keysize", "2048", "-validity", "10000"] + \
 	["-dname", "CN=ABO, OU=ABO, O=ABO, L=ABO, S=ABO, C=US"]
 
-	print colored("[+] Using internal keystore with:", 'green', attrs=['bold'])
-	print colored("\tAlias: " + (args.keystorealias if args.keystorealias != "" else "abo"), 'green', attrs=['bold'])
-	print colored("\tAlg: " + (args.keystorealg if args.keystorealg != "" else "RSA"), 'green', attrs=['bold'])
-	print colored("\tName: " + (args.keystorename if args.keystorename != "" else "abo.keystore"), 'green', attrs=['bold'])
-	print colored("\tPassword: " + (args.keystorepassword if args.keystorepassword != "" else "abo123abo"), 'green', attrs=['bold'])
-	print colored("\tKey size: 2048", 'green', attrs=['bold'])
-	print colored("\tValidity: 10000", 'green', attrs=['bold'])
-	print colored("\tDistinguished name: CN=ABO, OU=ABO, O=ABO, L=ABO, S=ABO, C=US", 'green', attrs=['bold'])
+	print(colored("[+] Using internal keystore with:", 'green', attrs=['bold']))
+	print(colored("\tAlias: " + (args.keystorealias if args.keystorealias != "" else "abo"), 'green', attrs=['bold']))
+	print(colored("\tAlg: " + (args.keystorealg if args.keystorealg != "" else "RSA"), 'green', attrs=['bold']))
+	print(colored("\tName: " + (args.keystorename if args.keystorename != "" else "abo.keystore"), 'green', attrs=['bold']))
+	print(colored("\tPassword: " + (args.keystorepassword if args.keystorepassword != "" else "abo123abo"), 'green', attrs=['bold']))
+	print(colored("\tKey size: 2048", 'green', attrs=['bold']))
+	print(colored("\tValidity: 10000", 'green', attrs=['bold']))
+	print(colored("\tDistinguished name: CN=ABO, OU=ABO, O=ABO, L=ABO, S=ABO, C=US", 'green', attrs=['bold']))
 	
 	_, output = executeCommand(command)
 
@@ -510,7 +411,7 @@ def createKeystore():
 def buildAPK():
 	global args
 	if args.build != "" and os.path.exists(args.build):
-		print colored("[+] Building APK", 'green', attrs=['bold'])
+		print(colored("[+] Building APK", 'green', attrs=['bold']))
 		executeCommand(["apktool", "b", args.build])
 
 def installAPK():
@@ -532,18 +433,18 @@ def installAPK():
 		if package in output.splitlines():
 			#uninstall first the package just in case the signature does not match
 			_, output = executeCommand(["adb", "uninstall", package])
-			print colored("[+] Uninstalling original APK", 'green', attrs=['bold'])
+			print(colored("[+] Uninstalling original APK", 'green', attrs=['bold']))
 
 		#install the apk
 		_, output = executeCommand(["adb", "install", apk])
 
 		if "INSTALL_PARSE_FAILED_NO_CERTIFICATES" in output:
-			print colored("[-] APK is not signed. Use --sign", 'red', attrs=['bold'])
+			print(colored("[-] APK is not signed. Use --sign", 'red', attrs=['bold']))
 			sys.exit()
 		
-		print colored("[+] Installing APK", 'green', attrs=['bold'])
+		print(colored("[+] Installing APK", 'green', attrs=['bold']))
 	else:
-		print colored("[-] ADB: Specified device is not found or there is no device.", 'red', attrs=['bold'])
+		print(colored("[-] ADB: Specified device is not found or there is no device.", 'red', attrs=['bold']))
 		sys.exit()
 
 def bsi():
