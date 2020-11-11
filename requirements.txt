@@ -1,4 +1,4 @@
-requests==2.9.1
+requests==2.20.0
 colorama==0.4.4
 lxml==4.2.1
 prettytable==1.0.1
