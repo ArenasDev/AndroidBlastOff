@@ -1,5 +1,5 @@
 requests==2.9.1
 colorama==0.4.4
-lxml==4.2.1
+lxml==4.6.3
 prettytable==1.0.1
 termcolor==1.1.0
